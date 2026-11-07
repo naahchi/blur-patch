@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#101828">
+<title>Video Watermark Patch Tool V4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+<header>
+ <div class="tag">BROWSER ONLY · CANVAS 2D · WEBCODECS</div>
+ <h1>Video Watermark Patch Tool <span>V4.2</span></h1>
+ <p>OpenCV, Pyodide और FFmpeg.wasm नहीं। Watermark को हल्के Canvas patches से छिपाएँ।</p>
+</header>
+
+<section class="card">
+ <h2>1. वीडियो चुनें</h2>
+ <input id="file" type="file" accept="video/*">
+ <video id="preview" controls playsinline></video>
+ <div id="meta" class="muted">अभी वीडियो नहीं चुना गया।</div>
+</section>
+
+<section class="card">
+ <h2>2. Watermark area चुनें</h2>
+ <div class="tools">
+  <button id="rect" class="tool selected">Rectangle</button>
+  <button id="circle" class="tool">Circle</button>
+  <button id="clear" class="tool">Clear</button>
+ </div>
+ <div class="stage">
+  <canvas id="canvas"></canvas>
+  <div id="placeholder">वीडियो चुनें और watermark पर ड्रॉ करें</div>
+ </div>
+ <label>Patch Method
+  <select id="method">
+   <option value="blur">Blur Patch</option>
+   <option value="pixel">Pixelate Patch</option>
+   <option value="clone">Clone Patch</option>
+  </select>
+ </label>
+ <div id="blurOptions">
+  <label>Blur strength <span id="blurVal">8</span>
+   <input id="blur" type="range" min="2" max="24" value="8">
+  </label>
+ </div>
+ <div id="pixelOptions" hidden>
+  <label>Pixel size <span id="pixelVal">10</span>
+   <input id="pixel" type="range" min="4" max="32" value="10">
+  </label>
+ </div>
+ <div id="cloneOptions" hidden>
+  <p class="note">Clone Patch के लिए watermark के पास समान background वाले source हिस्से पर दूसरी बार tap करें।</p>
+  <div id="cloneStatus" class="muted">Clone source सेट नहीं है।</div>
+ </div>
+ <label>Patch edge softness <span id="softVal">2</span>
+  <input id="soft" type="range" min="0" max="12" value="2">
+ </label>
+ <p class="note">एक ही selection हर फ्रेम पर लागू होगी। चलती हुई जगह पर watermark के लिए यह संस्करण उपयुक्त नहीं है।</p>
+</section>
+
+<section class="card">
+ <h2>3. Export</h2>
+ <div class="specs">
+  <div><small>Resolution</small><strong>Original</strong></div>
+  <div><small>Frame timing</small><strong>Source timestamps</strong></div>
+  <div><small>Output</small><strong>MP4</strong></div>
+ </div>
+ <button id="start" class="primary" disabled>Process video</button>
+ <button id="cancel" class="danger" disabled>Cancel</button>
+ <div class="progress"><div id="bar"></div></div>
+ <div class="stats">
+  <div><small>Progress</small><strong id="pct">0%</strong></div>
+  <div><small>Frames</small><strong id="frames">0</strong></div>
+  <div><small>Elapsed</small><strong id="elapsed">00:00</strong></div>
+ </div>
+ <div id="status" class="status">वीडियो चुनें।</div>
+ <button id="saveDevice" class="primary save" hidden type="button">Save to device</button>
+ <a id="download" hidden>Fallback: Download processed video</a>
+</section>
+
+<section class="card info">
+ <h2>महत्वपूर्ण सीमाएँ</h2>
+ <ul>
+  <li>यह संस्करण watermark को reconstruct नहीं करता; selected area को blur, pixelate या clone patch से ढकता है।</li>
+  <li>Canvas 2D से patch बनता है। WebCodecs encoding और Mediabunny demux/mux के लिए है। Mediabunny केवल container/codec handling करता है, image processing नहीं।</li>
+  <li>Browser में WebCodecs अकेले MP4 file नहीं बनाता; MP4 container में encoded frames रखने के लिए muxer जरूरी है।</li>
+  <li>वीडियो दोबारा encode होगा, इसलिए original codec और bitrate समान नहीं रहेंगे। Original timestamps/frame timing रखने का प्रयास होगा।</li>
+  <li>पहले 5–10 सेकंड का टेस्ट करें। Original resolution और लंबी अवधि मोबाइल पर भारी हो सकती है।</li>
+ </ul>
+</section>
+<footer>V4.2 · Canvas 2D · WebCodecs · Mediabunny</footer>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
